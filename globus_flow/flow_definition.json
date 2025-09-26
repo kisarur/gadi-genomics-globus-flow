@@ -1,0 +1,73 @@
+{
+    "StartAt": "SetConstants",
+    "States": {
+        "SetConstants": {
+            "Type": "ExpressionEval",
+            "Parameters": {
+                "gadi_collection_id": "<gadi_collection_id>",
+                "gadi_compute_endpoint_id": "<gadi_compute_endpoint_id>",
+                "seqera_compute_env_id": "<seqera_compute_env_id>",
+                "launch_workflow_fuuid": "<launch_workflow_fuuid>",
+                "monitor_workflow_fuuid": "<monitor_workflow_fuuid>",
+                "gadi_globus_root": "/path/to/gadi-globus-root"
+            },
+            "ResultPath": "$.constants",
+            "Next": "TransferToComputeEndpoint"
+        },
+        "TransferToComputeEndpoint": {
+            "Type": "Action",
+            "ActionUrl": "https://transfer.actions.globus.org/transfer",
+            "Parameters": {
+                "DATA": [
+                    {
+                        "source_path.$": "$.input_source.path",
+                        "destination_path.$": "$.input_destination"
+                    }
+                ],
+                "source_endpoint.$": "$.input_source.id",
+                "destination_endpoint.$": "$.constants.gadi_collection_id"
+            },
+            "ResultPath": "$.transfer_to_endpoint_result",
+            "Next": "LaunchWorkflow"
+        },
+        "LaunchWorkflow": {
+            "Type": "Action",
+            "ActionUrl": "https://compute.actions.globus.org/v3",
+            "Parameters": {
+                "endpoint_id.$": "$.constants.gadi_compute_endpoint_id",
+                "tasks": [
+                    {
+                        "function_id.$": "$.constants.launch_workflow_fuuid",
+                        "args": [],
+                        "kwargs": {
+                            "globus_root.$": "$.constants.gadi_globus_root",
+                            "params_file_relative.$": "$.workflow_params_file",
+                            "work_directory_relative.$": "$.workflow_work_directory",
+                            "seqera_compute_env_id.$": "$.constants.seqera_compute_env_id"
+                        }
+                    }
+                ]
+            },
+            "ResultPath": "$.launch_workflow_result",
+            "Next": "MonitorWorkflow"
+        },
+        "MonitorWorkflow": {
+            "Type": "Action",
+            "ActionUrl": "https://compute.actions.globus.org/v3",
+            "Parameters": {
+                "endpoint_id.$": "$.constants.gadi_compute_endpoint_id",
+                "tasks": [
+                    {
+                        "function_id.$": "$.constants.monitor_workflow_fuuid",
+                        "args": [],
+                        "kwargs": {
+                            "workflow_id.=": "launch_workflow_result.details.result[0]"
+                        }
+                    }
+                ]
+            },
+            "ResultPath": "$.monitor_workflow_result",
+            "End": true
+        }
+    }
+}

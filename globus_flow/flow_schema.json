@@ -1,0 +1,47 @@
+{
+    "type": "object",
+    "required": [
+        "input_source",
+        "input_destination",
+        "workflow_params_file",
+        "workflow_work_directory"
+    ],
+    "properties": {
+        "input_source": {
+            "type": "object",
+            "format": "globus-collection",
+            "required": [
+                "id",
+                "path"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "UUID of the source Globus collection"
+                },
+                "path": {
+                    "type": "string",
+                    "description": "Path to workflow input data on the source Globus collection"
+                }
+            },
+            "additionalProperties": false
+        },
+        "input_destination": {
+            "type": "string",
+            "description": "Path on Gadi collection where input data will be copied to",
+            "default": "/wf-human-variation-seqera/input"
+        },
+        "workflow_params_file": {
+            "type": "string",
+            "description": "Path on Gadi collection to the workflow's Nextflow params.yml file",
+            "default": "/wf-human-variation-seqera/input/params.yml"
+        },
+        "workflow_work_directory": {
+            "type": "string",
+            "description": "Path on Gadi collection for workflow's Nextflow work directory",
+            "default": "/wf-human-variation-seqera/work"
+        }
+    },
+    "additionalProperties": false
+}
