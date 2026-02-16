@@ -9,12 +9,12 @@
                 "seqera_compute_env_id": "<seqera_compute_env_id>",
                 "launch_workflow_fuuid": "<launch_workflow_fuuid>",
                 "monitor_workflow_fuuid": "<monitor_workflow_fuuid>",
-                "gadi_globus_root": "/path/to/gadi-globus-root"
+                "gadi_globus_root": "<gadi_globus_root>"
             },
             "ResultPath": "$.constants",
-            "Next": "TransferToComputeEndpoint"
+            "Next": "DataTransfer"
         },
-        "TransferToComputeEndpoint": {
+        "DataTransfer": {
             "Type": "Action",
             "ActionUrl": "https://transfer.actions.globus.org/transfer",
             "Parameters": {
@@ -25,7 +25,8 @@
                     }
                 ],
                 "source_endpoint.$": "$.input_source.id",
-                "destination_endpoint.$": "$.constants.gadi_collection_id"
+                "destination_endpoint.$": "$.constants.gadi_collection_id",
+                "sync_level": 3
             },
             "ResultPath": "$.transfer_to_endpoint_result",
             "Next": "LaunchWorkflow"
@@ -41,7 +42,9 @@
                         "args": [],
                         "kwargs": {
                             "globus_root.$": "$.constants.gadi_globus_root",
+                            "input_destination_relative.$": "$.input_destination",
                             "params_file_relative.$": "$.workflow_params_file",
+                            "output_directory_relative.$": "$.workflow_output_directory",
                             "work_directory_relative.$": "$.workflow_work_directory",
                             "seqera_compute_env_id.$": "$.constants.seqera_compute_env_id"
                         }

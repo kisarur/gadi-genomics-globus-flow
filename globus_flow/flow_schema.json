@@ -4,6 +4,7 @@
         "input_source",
         "input_destination",
         "workflow_params_file",
+        "workflow_output_directory",
         "workflow_work_directory"
     ],
     "properties": {
@@ -29,18 +30,19 @@
         },
         "input_destination": {
             "type": "string",
-            "description": "Path on Gadi collection where input data will be copied to",
-            "default": "/wf-human-variation-seqera/input"
+            "description": "Path on Gadi collection where input data will be copied to"
         },
         "workflow_params_file": {
             "type": "string",
-            "description": "Path on Gadi collection to the workflow's Nextflow params.yml file",
-            "default": "/wf-human-variation-seqera/input/params.yml"
+            "description": "Path on Gadi collection to the workflow's Nextflow params.yml file"
+        },
+        "workflow_output_directory": {
+            "type": "string",
+            "description": "Path on Gadi collection for workflow's output directory"
         },
         "workflow_work_directory": {
             "type": "string",
-            "description": "Path on Gadi collection for workflow's Nextflow work directory",
-            "default": "/wf-human-variation-seqera/work"
+            "description": "Path on Gadi collection for workflow's Nextflow work directory"
         }
     },
     "additionalProperties": false

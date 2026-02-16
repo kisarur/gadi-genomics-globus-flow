@@ -1,10 +1,16 @@
 #!/usr/bin/env python
 
-def launch_workflow(globus_root: str, params_file_relative: str, work_directory_relative: str, seqera_compute_env_id: str, seqera_api_access_token: str = None) -> str:
+def launch_workflow(globus_root: str, input_destination_relative: str, params_file_relative: str, output_directory_relative: str, work_directory_relative: str, seqera_compute_env_id: str, seqera_api_access_token: str = None) -> str:
     import json
     import yaml
     import requests
     import os
+
+    # Convert paths relative to globus_root to absolute paths
+    input_destination = globus_root + input_destination_relative
+    params_file = globus_root + params_file_relative
+    output_directory = globus_root + output_directory_relative
+    work_directory = globus_root + work_directory_relative
 
     API_BASE = "https://seqera.services.biocommons.org.au/api"
 
@@ -14,10 +20,6 @@ def launch_workflow(globus_root: str, params_file_relative: str, work_directory_
     
     if seqera_api_access_token is None or seqera_api_access_token == "":
         raise ValueError("Error: Seqera API access token is required but not provided or found in SEQERA_API_ACCESS_TOKEN environment variable.")
-
-    # Convert paths relative to globus_root to absolute paths
-    params_file = globus_root + params_file_relative
-    work_directory = globus_root + work_directory_relative
 
     # Set API request headers
     headers = {
@@ -31,25 +33,47 @@ def launch_workflow(globus_root: str, params_file_relative: str, work_directory_
     with open(params_file, "r") as f:
         params_raw = yaml.safe_load(f)
 
-    # Replace placeholders for {globus_root} in the params with the actual globus_root, and convert to JSON
+    # Replace placeholders for {input_destination} in the params with the actual input_destination
     params_resolved = {
-        key: value.format(globus_root=globus_root) if isinstance(value, str) else value
+        key: value.format(input_destination=input_destination) if isinstance(value, str) else value
         for key, value in params_raw.items()
     }
+
+    # Extract path to the samplesheet from the params and replace placeholders for {input_destination} in the samplesheet file
+    samplesheet_path = params_resolved.get("input")
+    if samplesheet_path is None:
+        raise ValueError("Error: 'input' key (i.e. path to the samplesheet) not found in the params file.")
+    with open(samplesheet_path, "r") as f:
+        samplesheet_content = f.read()
+    samplesheet_content_resolved = samplesheet_content.format(input_destination=input_destination)
+
+    # Create the output directory and save the resolved samplesheet there
+    os.makedirs(output_directory)
+    resolved_samplesheet_path = os.path.join(output_directory, os.path.basename(samplesheet_path))
+    with open(resolved_samplesheet_path, "w") as f:
+        f.write(samplesheet_content_resolved)
+
+    # Update the params to point to the resolved samplesheet path
+    params_resolved["input"] = resolved_samplesheet_path
+
+    # Add output directory to params
+    params_resolved["outdir"] = output_directory
+
+    # Convert the params to JSON string
     params_text = json.dumps(params_resolved)
 
     # Construct the JSON payload
     data = {
         "launch": {
             "computeEnvId": seqera_compute_env_id,
-            "pipeline": "file:/scratch/ma77/workflows/wf-human-variation/2.6.0/wf-human-variation.git",
+            "pipeline": "file:/g/data/cy20/workflows/oncoanalyser/2.2.0/oncoanalyser.git",
             "workDir": work_directory,
             "configProfiles": [
                 "singularity"
             ],
-            "configText": "includeConfig \"/scratch/ma77/workflows/wf-human-variation/2.6.0/config/nci_gadi.config\"",
+            "configText": "includeConfig \"/g/data/cy20/workflows/oncoanalyser/2.2.0/config/nci_gadi.config\"",
             "paramsText": params_text,
-            "preRunScript": "module load nextflow/24.04.4; \nexport NXF_SINGULARITY_CACHEDIR=/scratch/ma77/workflows/wf-human-variation/2.6.0/images",
+            "preRunScript": "module load nextflow/25.04.6; \nexport NXF_SINGULARITY_CACHEDIR=/g/data/cy20/workflows/oncoanalyser/2.2.0/images",
         }
     }
 

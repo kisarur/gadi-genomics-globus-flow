@@ -1,0 +1,8 @@
+project: "ab12"
+storage: "gdata/cy20+gdata/ab12+scratch/cd34"
+input: "{input_destination}/samplesheet.csv"
+hmf_genomes_base: "{input_destination}/demo_data"
+ref_data_hmf_data_path: "{input_destination}/demo_data/hmf_pipeline_resources.38_v2.2.0--3.tar.gz"
+mode: 'wgts'
+genome: 'GRCh38_hmf'
+max_fastq_records: 0
