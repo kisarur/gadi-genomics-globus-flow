@@ -51,7 +51,7 @@ module load python3/3.11.0
 source .venv/bin/activate
 ```
 
-3. Register the compute functions and record the returned function UUIDs for `<launch_workflow_fuuid>` and `<monitor_workflow_fuuid>`:
+3. Register the compute functions and record the returned UUIDs for the `launch_workflow` (`<launch_workflow_fuuid>`) and `monitor_workflow` (`<monitor_workflow_fuuid>`) functions:
 
 ```bash
 python compute_functions/register_compute_functions.py
