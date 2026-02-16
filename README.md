@@ -6,13 +6,13 @@ This repository provides a proof-of-concept Globus Flow that automates data tran
 2. Launches a Nextflow workflow on Gadi via the Seqera Platform API (uses *Globus Compute*)
 3. Monitors workflow execution via the Seqera Platform API (uses *Globus Compute*)
 
-<table>
-  <tr>
-    <td align="center">
+<table style="border-collapse: collapse; border: none;">
+  <tr style="border: none;">
+    <td align="center" style="border: none;">
       <img src="images/globus-flow-diagram.svg" width="600"><br>
       <em>Figure 1: Globus Flow Diagram</em>
     </td>
-    <td align="center">
+    <td align="center" style="border: none;">
       <img src="images/system-architecture.svg" width="400"><br>
       <em>Figure 2: System Architecture Overview</em>
     </td>
