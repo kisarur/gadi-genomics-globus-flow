@@ -101,7 +101,7 @@ See the `demo_inputs/` directory of this repository for an example structure:
   <ol type="i">
       <li>Go to: <a href="https://app.globus.org/flows/library">https://app.globus.org/flows/library</a></li>
       <li>Start "Gadi Genomics Globus Flow"</li>
-      <li>Provide the required inputs using the form (generated from <code>globus_flow/flow_schema.json</code>)</li>
+      <li>Provide the required inputs using the form (generated from <code>globus_flow/flow_schema.json</code>) and click <b>Start Run</b></li>
   </ol>
 
 Example inputs:
